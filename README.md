@@ -32,7 +32,6 @@ gestionnaire_recettes/
 ├── ingredients/           # Application ingrédients  
 ├── profiles/              # Profils utilisateurs et favoris
 ├── comments/              # Système de commentaires
-└── templates/             # Templates globaux
 ```
 
 ## 🚀 Installation
@@ -46,7 +45,9 @@ cd gestionnaire-recettes
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 # ou
-venv\Scripts\activate     # Windows
+venv\Scripts\activate   # Windows cmd bash
+#ou
+.\env\Scripts\Activate.ps1   # Windows powershell
 
 # Installer les dépendances
 pip install -r requirements.txt

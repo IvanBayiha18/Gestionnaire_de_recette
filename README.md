@@ -39,7 +39,7 @@ gestionnaire_recettes/
 
 ```bash
 # Cloner le repository
-git clone https://github.com/ton-username/gestionnaire-recettes.git
+git clone https://github.com/IvanBayiha18/Gestionnaire_de_recette.git
 cd gestionnaire-recettes
 
 # Créer l'environnement virtuel

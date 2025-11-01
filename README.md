@@ -31,7 +31,7 @@ gestionnaire_recettes/
 ├── recipes/               # Application recettes
 ├── ingredients/           # Application ingrédients  
 ├── profiles/              # Profils utilisateurs et favoris
-├── comments/              # Système de commentaires
+└── comments/              # Système de commentaires
 ```
 
 ## 🚀 Installation

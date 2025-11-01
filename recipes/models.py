@@ -17,14 +17,22 @@ class Category(models.Model):
         verbose_name = 'Catégorie'
         verbose_name_plural = 'Catégories'
         ordering = ['nom']
+
 class Recipe(models.Model):
+    """Modèle principal pour une recette"""
     DIFFICULTE_CHOICES = [
         ('facile', 'Facile'),
         ('moyen', 'Moyen'),
-        ('difficile', 'Dificile')
+        ('difficile', 'Difficile'),
     ]
-
-        # Relation avec Category (une recette → une catégorie)
+    
+    titre = models.CharField(
+        max_length=100, 
+        unique=True, 
+        verbose_name="Titre de la recette"  # ✅ Correction orthographe
+    )
+    
+    # ✅ Relation avec Category (une recette → une catégorie)
     categorie = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,  # Si on supprime la catégorie, la recette garde sa catégorie vide
@@ -33,41 +41,33 @@ class Recipe(models.Model):
         related_name='recettes',
         verbose_name='Catégorie'
     )
-
-    titre = models.CharField(
-        max_length=100, unique= True, verbose_name="Titre de la recète"
-        )
-
-    ingredient = models.ForeignKey(
-        'ingredients.Ingredient',
-        on_delete= models.CASCADE,
-        related_name= 'Recète',
-        verbose_name= 'Ingrédient'
+    
+    description = models.TextField(  # ✅ TextField au lieu de CharField pour texte long
+        max_length=1000, 
+        verbose_name='Description'
     )
-
-    quantity = models.IntegerChoices(names='Quantité')
-
-    description = models.TextField(max_length=1000, verbose_name='Description')
-
-    temps = models.models.TimeField(("Temps de préparation"), auto_now=False, auto_now_add=False)
-
+    
+    temps_preparation = models.PositiveIntegerField(  # ✅ Temps en minutes
+        verbose_name="Temps de préparation (minutes)"
+    )
+    
     difficulte = models.CharField(
         max_length=20,
         choices=DIFFICULTE_CHOICES,
         default='moyen',
         verbose_name="Niveau de difficulté"
     )
-
-    date_creation = models.DateTimeField(auto_now_add= True)
-    date_modification = models.DateTimeField(auto_now= True)
+    
+    date_creation = models.DateTimeField(auto_now_add=True)
+    date_modification = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.titre
 
     class Meta:
-        verbose_name = 'Recètte'
-        verbose_name_plural = 'recèttes'
-        ordering = ['nom']
+        verbose_name = 'Recette'  # ✅ Orthographe
+        verbose_name_plural = 'Recettes'
+        ordering = ['titre']  # ✅ Ordre par titre
 class RecipeIngredient(models.Model):
     """Modèle intermédiaire pour gérer les quantités d'ingrédients"""
     recette = models.ForeignKey(

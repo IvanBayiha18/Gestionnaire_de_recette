@@ -93,6 +93,7 @@ class RecipeIngredient(models.Model):
         help_text="Ex: g, kg, ml, L, cuillère à soupe, pincée..."
     )
     class Meta:
+        verbose_name_plural = "Ingredients de la recette"
         unique_together = ['recette', 'ingredient']  #  Évite les doublons
 
 class RecipeStep(models.Model):  # 

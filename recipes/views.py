@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from .models import Recipe, Category
 
 def home(request):
@@ -11,3 +11,19 @@ def home(request):
     }
     
     return render(request, 'recipes/home.html', context)
+
+def recipe_detail(request, recipe_id):
+    """Vue pour le détail d'une recette"""
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    
+    # Récupère les ingrédients et étapes liés
+    ingredients = recipe.ingredients_recette.all()
+    etapes = recipe.etapes.all().order_by('ordre')
+    
+    context = {
+        'recipe': recipe,
+        'ingredients': ingredients,
+        'etapes': etapes,
+    }
+    
+    return render(request, 'recipes/recipe_detail.html', context)

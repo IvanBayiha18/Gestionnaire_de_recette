@@ -34,7 +34,9 @@
                             <small class="text-muted">{{ recipe.temps_preparation }} min</small>
                             <span class="badge bg-primary">{{ recipe.difficulte|title }}</span>
                         </div>
-                        <a href="#" class="btn btn-outline-primary btn-sm mt-2">Voir la recette</a>
+                        <a href="{% url 'recipe_detail' recipe.id %}" class="btn btn-outline-primary btn-sm mt-2">
+                            Voir la recette
+                        </a>
                     </div>
                 </div>
             </div>

@@ -104,7 +104,8 @@ app/
 
 ## 📸 Aperçu
 
-*(Des captures d'écran seront ajoutées au fur et à mesure du développement)*
+Pages d'acceuil
+![alt text](Acceuil2-1.png)
 
 ## 🤝 Contribution
 
@@ -123,3 +124,6 @@ Développé avec passion dans le cadre de l'apprentissage de Django.
 **💡 Note** : Ce README évoluera au fur et à mesure du développement du projet avec des captures d'écran, des gifs de démonstration et des instructions détaillées.
 
 ---
+
+
+[def]: Acceuil2.png

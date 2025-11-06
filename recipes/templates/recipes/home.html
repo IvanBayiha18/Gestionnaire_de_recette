@@ -40,11 +40,6 @@
                     </div>
                 </div>
             </div>
-            <div class="text-center mt-4">
-            <a href="{% url 'recipe_list' %}" class="btn btn-primary btn-lg">
-                Voir toutes les recettes
-            </a>
-             </div>
             {% empty %}
             <div class="col-12 text-center">
                 <p class="text-muted">Aucune recette pour le moment.</p>
@@ -53,4 +48,9 @@
         </div>
     </div>
 </section>
+<div class="text-center mt-4">
+    <a href="{% url 'recipe_list' %}" class="btn btn-primary btn-lg">
+         Voir toutes les recettes
+    </a>
+</div>
 {% endblock %}

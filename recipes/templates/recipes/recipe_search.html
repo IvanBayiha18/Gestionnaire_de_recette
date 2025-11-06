@@ -1,0 +1,165 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}Recherche - RecipeMaster{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- En-tête avec formulaire de recherche avancée -->
+    <div class="row">
+        <div class="col-lg-3">
+            <!-- Filtres avancés -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="fas fa-filter"></i> Filtres</h6>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{% url 'recipe_search' %}">
+                        <!-- Recherche texte -->
+                        <div class="mb-3">
+                            <label for="q" class="form-label">Recherche</label>
+                            <input type="text" 
+                                   name="q" 
+                                   id="q"
+                                   class="form-control" 
+                                   placeholder="Mot-clé..."
+                                   value="{{ query }}">
+                        </div>
+                        
+                        <!-- Filtre catégorie -->
+                        <div class="mb-3">
+                            <label for="categorie" class="form-label">Catégorie</label>
+                            <select name="categorie" id="categorie" class="form-select">
+                                <option value="">Toutes les catégories</option>
+                                {% for categorie in categories %}
+                                <option value="{{ categorie.id }}" 
+                                        {% if selected_categorie == categorie.id|stringformat:"i" %}selected{% endif %}>
+                                    {{ categorie.nom }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- Filtre difficulté -->
+                        <div class="mb-3">
+                            <label for="difficulte" class="form-label">Difficulté</label>
+                            <select name="difficulte" id="difficulte" class="form-select">
+                                <option value="">Tous les niveaux</option>
+                                <option value="facile" {% if selected_difficulte == 'facile' %}selected{% endif %}>Facile</option>
+                                <option value="moyen" {% if selected_difficulte == 'moyen' %}selected{% endif %}>Moyen</option>
+                                <option value="difficile" {% if selected_difficulte == 'difficile' %}selected{% endif %}>Difficile</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Filtre temps -->
+                        <div class="mb-3">
+                            <label for="temps_max" class="form-label">Temps max (minutes)</label>
+                            <input type="number" 
+                                   name="temps_max" 
+                                   id="temps_max"
+                                   class="form-control" 
+                                   placeholder="Ex: 30"
+                                   value="{{ selected_temps_max }}">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i> Appliquer les filtres
+                        </button>
+                        
+                        {% if search_performed %}
+                        <a href="{% url 'recipe_search' %}" class="btn btn-outline-secondary w-100 mt-2">
+                            <i class="fas fa-times"></i> Effacer les filtres
+                        </a>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Résultats -->
+        <div class="col-lg-9">
+            <!-- En-tête résultats -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3">
+                        {% if search_performed %}
+                        Résultats de la recherche
+                        {% else %}
+                        Toutes les recettes
+                        {% endif %}
+                    </h1>
+                    <p class="text-muted mb-0">
+                        {{ page_obj.paginator.count }} recette(s) trouvée(s)
+                        {% if query %} pour "{{ query }}"{% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Message si aucun résultat -->
+            {% if page_obj.paginator.count == 0 and search_performed %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                Aucune recette ne correspond à votre recherche.
+                <a href="{% url 'recipe_search' %}" class="alert-link">Afficher toutes les recettes</a>
+            </div>
+            {% endif %}
+
+            <!-- Grille des recettes (identique à recipe_list.html) -->
+            <div class="row g-4">
+                {% for recipe in page_obj %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card recipe-card shadow-sm h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ recipe.titre }}</h5>
+                            <p class="card-text text-muted">{{ recipe.description|truncatewords:15 }}</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <small class="text-muted">{{ recipe.temps_preparation }} min</small>
+                                <span class="badge bg-primary">{{ recipe.difficulte|title }}</span>
+                                {% if recipe.categorie %}
+                                <span class="badge bg-secondary">{{ recipe.categorie.nom }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <a href="{% url 'recipe_detail' recipe.id %}" class="btn btn-outline-primary w-100">
+                                Voir la recette
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.paginator.num_pages > 1 %}
+            <nav class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1">Première</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">Précédent</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">Suivant</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.paginator.num_pages }}">Dernière</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

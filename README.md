@@ -107,6 +107,15 @@ app/
 Pages d'acceuil
 ![alt text](Acceuil2-1.png)
 
+Page de connexion
+![alt text](connexion.png)
+
+Page d'inscription
+![alt text](<création de compte.png>)
+
+Page du profil d'utilisateur
+![alt text](profil_user.png)
+
 ## 🤝 Contribution
 
 Ce projet est développé dans un cadre d'apprentissage. Les suggestions d'amélioration sont les bienvenues !

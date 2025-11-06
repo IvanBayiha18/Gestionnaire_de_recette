@@ -50,7 +50,8 @@ venv\Scripts\activate   # Windows cmd bash
 .\env\Scripts\Activate.ps1   # Windows powershell
 
 # Installer les dépendances
-pip install -r requirements.txt
+pip install django
+pip install pillow #Pour la gestion d'images
 
 # Appliquer les migrations
 python manage.py migrate

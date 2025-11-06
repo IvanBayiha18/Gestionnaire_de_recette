@@ -27,45 +27,75 @@
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">
-                <i class="fas fa-utensils"></i> RecipeMaster
-            </a>
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <i class="fas fa-utensils"></i> RecipeMaster
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'home' %}">Accueil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'recipe_list' %}">Toutes les recettes</a>
+                </li>
+            </ul>
             
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'home' %}">Accueil</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'recipe_list' %}">Toutes les recettes</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Catégories</a>
-                    </li>
-                </ul>
-
-                <!-- Formulaire de recherche > -->
-                <form class="d-flex me-2" action="{% url 'recipe_search' %}" method="GET">
-                    <div class="input-group">
-                        <input type="text" 
-                        name="q" 
-                        class="form-control" 
-                        placeholder="Rechercher une recette..." 
-                        aria-label="Rechercher"
-                        value="{{ request.GET.q }}">
+            <!-- Barre de recherche - TOUJOURS visible -->
+            <form class="d-flex me-3 my-2 my-lg-0" action="{% url 'recipe_search' %}" method="GET">
+                <div class="input-group">
+                    <input type="text" 
+                           name="q" 
+                           class="form-control" 
+                           placeholder="Rechercher une recette..." 
+                           aria-label="Rechercher"
+                           value="{{ request.GET.q }}">
                     <button class="btn btn-outline-light" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
-                    </div>
-                </form>
-                <div class="navbar-nav">
-                    <a class="nav-link" href="#"><i class="fas fa-user"></i> Connexion</a>
-                    <a class="nav-link" href="#"><i class="fas fa-user-plus"></i> Inscription</a>
                 </div>
+            </form>
+            
+            <!-- Partie utilisateur -->
+            <div class="navbar-nav">
+                {% if user.is_authenticated %}
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user"></i> {{ user.username }}
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'profile' %}">Mon profil</a></li>
+                        <li><a class="dropdown-item" href="#">Mes recettes</a></li>
+                        <li><a class="dropdown-item" href="#">Mes favoris</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Déconnexion</a></li>
+                    </ul>
+                </div>
+                {% else %}
+                <a class="nav-link" href="{% url 'login' %}"><i class="fas fa-user"></i> Connexion</a>
+                <a class="nav-link" href="{% url 'register' %}"><i class="fas fa-user-plus"></i> Inscription</a>
+                {% endif %}
             </div>
         </div>
+    </div>
     </nav>
+
+    <!-- Messages Django (alertes) -->
+    <div class="container mt-3">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
 
     <!-- Contenu principal -->
     <main>

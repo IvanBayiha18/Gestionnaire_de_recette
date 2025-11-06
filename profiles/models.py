@@ -39,6 +39,8 @@ class UserProfile(models.Model):
         null=True,
         blank=True
         )
+    date_creation = models.DateTimeField(auto_now_add=True)
+    date_modification = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Profil de {self.user.username}" # Retourne le username

@@ -1,0 +1,138 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}Mon Profil - RecipeMaster{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- En-tête du profil -->
+    <div class="row">
+        <div class="col-lg-4">
+            <!-- Carte profil -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-circle"></i> Mon Profil</h5>
+                </div>
+                <div class="card-body text-center">
+                    <!-- Avatar -->
+                    <div class="mb-3">
+                        {% if user_profile.avatar %}
+                            <img src="{{ user_profile.avatar.url }}" 
+                                 alt="Avatar de {{ user.username }}" 
+                                 class="rounded-circle img-thumbnail" 
+                                 style="width: 150px; height: 150px; object-fit: cover;">
+                        {% else %}
+                            <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center" 
+                                 style="width: 150px; height: 150px;">
+                                <i class="fas fa-user fa-3x text-light"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Informations utilisateur -->
+                    <h4>{{ user.username }}</h4>
+                    {% if user_profile.localisation %}
+                        <p class="text-muted">
+                            <i class="fas fa-map-marker-alt"></i> {{ user_profile.localisation }}
+                        </p>
+                    {% endif %}
+                    
+                    <!-- Statistiques -->
+                    <div class="row text-center mt-3">
+                        <div class="col-4">
+                            <h5 class="mb-0">{{ favorites.count }}</h5>
+                            <small class="text-muted">Favoris</small>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="mb-0">0</h5>
+                            <small class="text-muted">Recettes</small>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="mb-0">0</h5>
+                            <small class="text-muted">Commentaires</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Bouton édition -->
+                    <button class="btn btn-outline-primary btn-sm mt-3" disabled>
+                        <i class="fas fa-edit"></i> Modifier le profil
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bio -->
+            {% if user_profile.bio %}
+            <div class="card shadow-sm mt-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-info-circle"></i> Bio</h6>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ user_profile.bio }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-8">
+            <!-- Section Favoris -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-heart"></i> Mes Recettes Favorites</h5>
+                </div>
+                <div class="card-body">
+                    {% if favorites %}
+                    <div class="row g-3">
+                        {% for favorite in favorites %}
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ favorite.recipe.titre }}</h6>
+                                    <p class="card-text text-muted small">
+                                        {{ favorite.recipe.description|truncatewords:10 }}
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">{{ favorite.recipe.temps_preparation }} min</small>
+                                        <span class="badge bg-primary">{{ favorite.recipe.difficulte|title }}</span>
+                                    </div>
+                                    <a href="{% url 'recipe_detail' favorite.recipe.id %}" 
+                                       class="btn btn-outline-primary btn-sm w-100 mt-2">
+                                        Voir la recette
+                                    </a>
+                                </div>
+                                <div class="card-footer text-muted small">
+                                    Ajouté le {{ favorite.date_added|date:"d/m/Y" }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-heart fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Aucune recette favorite</h5>
+                        <p class="text-muted">Explorez les recettes et ajoutez vos préférées !</p>
+                        <a href="{% url 'recipe_list' %}" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Découvrir des recettes
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Section Recettes Créées (pour plus tard) -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-utensils"></i> Mes Recettes Créées</h5>
+                </div>
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-plus-circle fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Aucune recette créée</h5>
+                    <p class="text-muted">Créez votre première recette pour la partager avec la communauté !</p>
+                    <button class="btn btn-outline-info" disabled>
+                        <i class="fas fa-plus"></i> Créer une recette
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

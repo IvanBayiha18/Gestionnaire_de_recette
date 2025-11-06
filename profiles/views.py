@@ -3,7 +3,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import UserProfile
+from .models import Favorite, UserProfile
 
 # Create your views here.
 
@@ -52,8 +52,14 @@ def logout_view(request):
 @login_required
 def profile(request):
     """Vue pour le profil utilisateur"""
-    user_profile = UserProfile.objects.get(user=request.user)
-    favorites = user_profile.favorites.all()
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+        # Récupère les favoris avec les recettes associées
+        favorites = Favorite.objects.filter(user_profile=user_profile).select_related('recipe')
+    except UserProfile.DoesNotExist:
+        # Crée un profil si il n'existe pas (sécurité)
+        user_profile = UserProfile.objects.create(user=request.user)
+        favorites = []
     
     context = {
         'user_profile': user_profile,

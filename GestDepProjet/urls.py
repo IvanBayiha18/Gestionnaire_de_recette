@@ -15,7 +15,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.conf.urls.static import static
 from django.urls import path
+from GestDepProjet import settings
 from recipes.views import home, recipe_detail, recipe_list, recipe_search
 from profiles.views import register, login_view, logout_view, profile
 
@@ -32,3 +34,6 @@ urlpatterns = [
     path('deconnexion/', logout_view, name='logout'),
     path('profil/', profile, name='profile'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

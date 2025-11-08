@@ -6,7 +6,7 @@ from django.utils import timezone
 class Comment(models.Model):
     """Modèle pour les commentaires de recettes"""
     
-    # ✅ CHANGÉ : Relation avec la recette au lieu de l'article
+    # Relation avec la recette au lieu de l'article
     recipe = models.ForeignKey(
         'recipes.Recipe',  # Référence à l'app recipes
         on_delete=models.CASCADE,

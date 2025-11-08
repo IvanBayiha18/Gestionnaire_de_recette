@@ -3,6 +3,8 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+
+from profiles.forms import UserForm, UserProfileForm
 from .models import Favorite, UserProfile
 
 # Create your views here.
@@ -66,3 +68,37 @@ def profile(request):
         'favorites': favorites,
     }
     return render(request, 'profiles/profile.html', context)
+
+@login_required
+def edit_profile(request):
+    """Vue pour éditer le profil utilisateur"""
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        user_profile = UserProfile.objects.create(user=request.user)
+    
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, instance=request.user)
+        profile_form = UserProfileForm(
+            request.POST, 
+            request.FILES,  # Important pour l'upload d'image
+            instance=user_profile
+        )
+        
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, 'Votre profil a été mis à jour avec succès !')
+            return redirect('profile')
+        else:
+            messages.error(request, 'Veuillez corriger les erreurs ci-dessous.')
+    else:
+        user_form = UserForm(instance=request.user)
+        profile_form = UserProfileForm(instance=user_profile)
+    
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form,
+    }
+    
+    return render(request, 'profiles/edit_profile.html', context)

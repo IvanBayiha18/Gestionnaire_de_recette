@@ -18,9 +18,9 @@ class CommentAdmin(admin.ModelAdmin):
         'statut_badge'
     )
     list_display_links = ('contenu_tronque',)
-    list_filter = ('approuve', 'date_creation', 'contenu', 'auteur')
+    list_filter = ('approuve', 'date_creation', 'auteur')
     list_editable = ('approuve',)
-    search_fields = ('contenu', 'auteurusername', 'articletitre')
+    search_fields = ('contenu', 'auteurusername', 'recipe__titre')
     date_hierarchy = 'date_creation'
     list_per_page = 20
     

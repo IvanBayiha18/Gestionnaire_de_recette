@@ -1,0 +1,177 @@
+{% extends 'recipes/base.html' %}
+
+{% block title %}{{ title }} - RecipeMaster{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- En-tête -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="display-5 fw-bold">
+                    <i class="fas fa-plus-circle"></i> {{ title }}
+                </h1>
+                <a href="{% url 'recipe_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour aux recettes
+                </a>
+            </div>
+
+            <!-- Formulaire principal -->
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Informations de base -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-info-circle"></i> Informations de la recette</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for field in recipe_form %}
+                        <div class="mb-3">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.help_text %}
+                            <div class="form-text">{{ field.help_text }}</div>
+                            {% endif %}
+                            {% for error in field.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Ingrédients -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-shopping-basket"></i> Ingrédients</h5>
+                    </div>
+                    <div class="card-body">
+                        {{ ingredient_formset.management_form }}
+                        <div id="ingredients-formset">
+                            {% for form in ingredient_formset %}
+                            <div class="ingredient-form row g-3 mb-3 p-3 border rounded">
+                                <div class="col-md-5">
+                                    {{ form.ingredient.label_tag }}
+                                    {{ form.ingredient }}
+                                </div>
+                                <div class="col-md-3">
+                                    {{ form.quantite.label_tag }}
+                                    {{ form.quantite }}
+                                </div>
+                                <div class="col-md-3">
+                                    {{ form.unite.label_tag }}
+                                    {{ form.unite }}
+                                </div>
+                                <div class="col-md-1 d-flex align-items-end">
+                                    {% if form.instance.pk %}
+                                        {{ form.DELETE.label_tag }}
+                                    {% endif %}
+                                    {{ form.DELETE }}
+                                </div>
+                                {% for hidden in form.hidden_fields %}
+                                    {{ hidden }}
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button type="button" class="btn btn-outline-success btn-sm" id="add-ingredient">
+                            <i class="fas fa-plus"></i> Ajouter un ingrédient
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Étapes de préparation -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-list-ol"></i> Étapes de préparation</h5>
+                    </div>
+                    <div class="card-body">
+                        {{ step_formset.management_form }}
+                        <div id="steps-formset">
+                            {% for form in step_formset %}
+                            <div class="step-form row g-3 mb-3 p-3 border rounded">
+                                <div class="col-md-1">
+                                    {{ form.ordre.label_tag }}
+                                    {{ form.ordre }}
+                                </div>
+                                <div class="col-md-10">
+                                    {{ form.description.label_tag }}
+                                    {{ form.description }}
+                                </div>
+                                <div class="col-md-1 d-flex align-items-end">
+                                    {% if form.instance.pk %}
+                                        {{ form.DELETE.label_tag }}
+                                    {% endif %}
+                                    {{ form.DELETE }}
+                                </div>
+                                {% for hidden in form.hidden_fields %}
+                                    {{ hidden }}
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button type="button" class="btn btn-outline-info btn-sm" id="add-step">
+                            <i class="fas fa-plus"></i> Ajouter une étape
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bouton de soumission -->
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save"></i> {{ title }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript pour ajouter dynamiquement des formulaires -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Ajouter un ingrédient
+    document.getElementById('add-ingredient').addEventListener('click', function() {
+        const formset = document.getElementById('ingredients-formset');
+        const totalForms = document.getElementById('id_ingredients-TOTAL_FORMS');
+        const formCount = parseInt(totalForms.value);
+        
+        const newForm = formset.children[0].cloneNode(true);
+        newForm.innerHTML = newForm.innerHTML.replace(/ingredients-\d+-/g, `ingredients-${formCount}-`);
+        newForm.innerHTML = newForm.innerHTML.replace(/\[0\]/g, `[${formCount}]`);
+        
+        // Réinitialiser les valeurs
+        newForm.querySelectorAll('input, select').forEach(input => {
+            if (input.type !== 'hidden' && input.name !== 'ingredients-' + (formCount - 1) + '-DELETE') {
+                input.value = '';
+            }
+        });
+        
+        formset.appendChild(newForm);
+        totalForms.value = formCount + 1;
+    });
+
+    // Ajouter une étape
+    document.getElementById('add-step').addEventListener('click', function() {
+        const formset = document.getElementById('steps-formset');
+        const totalForms = document.getElementById('id_steps-TOTAL_FORMS');
+        const formCount = parseInt(totalForms.value);
+        
+        const newForm = formset.children[0].cloneNode(true);
+        newForm.innerHTML = newForm.innerHTML.replace(/steps-\d+-/g, `steps-${formCount}-`);
+        newForm.innerHTML = newForm.innerHTML.replace(/\[0\]/g, `[${formCount}]`);
+        
+        // Réinitialiser les valeurs
+        newForm.querySelectorAll('input, textarea').forEach(input => {
+            if (input.type !== 'hidden' && input.name !== 'steps-' + (formCount - 1) + '-DELETE') {
+                input.value = '';
+            }
+        });
+        
+        formset.appendChild(newForm);
+        totalForms.value = formCount + 1;
+    });
+});
+</script>
+{% endblock %}

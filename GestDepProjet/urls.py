@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.conf.urls.static import static
 from django.urls import path
 from GestDepProjet import settings
-from recipes.views import home, recipe_detail, recipe_list, recipe_search
+from recipes.views import create_recipe, home, my_recipes, recipe_detail, recipe_list, recipe_search
 from profiles.views import edit_profile, favorite_list, register, login_view, logout_view, profile, toggle_favorite
 
 urlpatterns = [
@@ -34,8 +34,14 @@ urlpatterns = [
     path('deconnexion/', logout_view, name='logout'),
     path('profil/', profile, name='profile'),
     path('profil/editer/', edit_profile, name='edit_profile'),
+
+     #URLs pour la gestion des favoris
     path('favoris/', favorite_list, name='favorite_list'),
     path('favoris/toggle/<int:recipe_id>/', toggle_favorite, name='toggle_favorite'),
+
+     #URLs pour la création de recettes
+    path('mes-recettes/', my_recipes, name='my_recipes'),
+    path('recettes/creer/', create_recipe, name='create_recipe'),
 ]
 
 if settings.DEBUG:

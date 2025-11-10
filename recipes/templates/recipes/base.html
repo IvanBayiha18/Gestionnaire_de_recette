@@ -39,13 +39,19 @@
         <div class="collapse navbar-collapse" id="navbarContent">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'home' %}">Accueil</a>
+                    <a class="nav-link active" href="{% url 'home' %}"> Accueil</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'recipe_list' %}">Toutes les recettes</a>
+                    <a class="nav-link" href="{% url 'recipe_list' %}"> Toutes les recettes </a>
                 </li>
                 <li>
-                    <a class="dropdown-item" href="{% url 'favorite_list' %}">Mes favoris</a>
+                    <a class="nav-link" href="{% url 'favorite_list' %}"> Mes favoris </a>
+                </li>
+                <li>
+                    <a class="nav-link" href="{% url 'my_recipes' %}"> Mes recettes </a>
+                </li>
+                <li>
+                    <a class="nav-link" href="{% url 'create_recipe' %}"> Créer une recette </a>
                 </li>
             </ul>
             

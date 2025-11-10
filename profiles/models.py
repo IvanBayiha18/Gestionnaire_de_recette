@@ -48,7 +48,7 @@ class UserProfile(models.Model):
     class Meta:
         verbose_name = 'Profil utilisateur'
         verbose_name_plural = 'Profils utilisateurs'
-        ordering = ['user__username']  # ✅ Trie par username
+        ordering = ['user__username']  # Trie par username
 
 
 class Favorite(models.Model):
@@ -59,14 +59,14 @@ class Favorite(models.Model):
     user_profile = models.ForeignKey(
         UserProfile,
         on_delete=models.CASCADE,
-        related_name='favorites',  # ✅ user_profile.favorites_relation.all()
+        related_name='favorites',  #user_profile.favorites_relation.all()
         verbose_name='Profil utilisateur'
     )
     
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='favorited_by',  # ✅ recipe.favorited_by.all()
+        related_name='favorited_by',  # recipe.favorited_by.all()
         verbose_name='Recette'
     )
     
@@ -78,7 +78,7 @@ class Favorite(models.Model):
     class Meta:
         verbose_name = 'Favori'
         verbose_name_plural = 'Favoris'
-        unique_together = ['user_profile', 'recipe']  # ✅ Évite les doublons
+        unique_together = ['user_profile', 'recipe']  # Évite les doublons
 
     def __str__(self):
         return f"{self.user_profile.user.username} - {self.recipe.titre}"

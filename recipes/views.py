@@ -1,8 +1,12 @@
-from django.shortcuts import get_object_or_404, render
+from pyexpat.errors import messages
+from django.forms import inlineformset_factory
+from django.shortcuts import get_object_or_404, redirect, render
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 
 from profiles.models import Favorite, UserProfile
-from .models import Recipe, Category
+from recipes.forms import RecipeForm, RecipeIngredientForm, RecipeStepForm
+from .models import Recipe, Category, RecipeIngredient, RecipeStep
 from django.db.models import Q
 
 def home(request):
@@ -127,3 +131,63 @@ def recipe_detail(request, recipe_id):
     }
     
     return render(request, 'recipes/recipe_detail.html', context)
+
+@login_required
+def create_recipe(request):
+    """Vue pour créer une nouvelle recette"""
+    
+    # Création des formsets pour ingrédients et étapes
+    RecipeIngredientFormSet = inlineformset_factory(
+        Recipe, RecipeIngredient, form=RecipeIngredientForm, extra=3, can_delete=True
+    )
+    
+    RecipeStepFormSet = inlineformset_factory(
+        Recipe, RecipeStep, form=RecipeStepForm, extra=3, can_delete=True
+    )
+    
+    if request.method == 'POST':
+        recipe_form = RecipeForm(request.POST)
+        ingredient_formset = RecipeIngredientFormSet(request.POST, prefix='ingredients')
+        step_formset = RecipeStepFormSet(request.POST, prefix='steps')
+        
+        if recipe_form.is_valid() and ingredient_formset.is_valid() and step_formset.is_valid():
+            # Sauvegarder la recette
+            recipe = recipe_form.save(commit=False)
+            recipe.auteur = request.user  # On ajoutera ce champ après
+            recipe.save()
+            
+            # Sauvegarder les formsets
+            ingredient_formset.instance = recipe
+            ingredient_formset.save()
+            
+            step_formset.instance = recipe
+            step_formset.save()
+            
+            messages.success(request, 'Votre recette a été créée avec succès !')
+            return redirect('recipe_detail', recipe_id=recipe.id)
+    else:
+        recipe_form = RecipeForm()
+        ingredient_formset = RecipeIngredientFormSet(prefix='ingredients')
+        step_formset = RecipeStepFormSet(prefix='steps')
+    
+    context = {
+        'recipe_form': recipe_form,
+        'ingredient_formset': ingredient_formset,
+        'step_formset': step_formset,
+        'title': 'Créer une recette',
+    }
+    
+    return render(request, 'recipes/recipe_form.html', context)
+
+@login_required
+def my_recipes(request):
+    """Vue pour afficher les recettes de l'utilisateur"""
+    # Pour l'instant, retourne toutes les recettes
+    # On implémentera le filtre par utilisateur après avoir ajouté le champ auteur
+    recipes = Recipe.objects.all().order_by('-date_creation')
+    
+    context = {
+        'recipes': recipes,
+    }
+    
+    return render(request, 'recipes/my_recipes.html', context)

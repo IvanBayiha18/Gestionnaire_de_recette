@@ -19,7 +19,7 @@ from django.conf.urls.static import static
 from django.urls import path
 from GestDepProjet import settings
 from recipes.views import home, recipe_detail, recipe_list, recipe_search
-from profiles.views import edit_profile, register, login_view, logout_view, profile
+from profiles.views import edit_profile, favorite_list, register, login_view, logout_view, profile, toggle_favorite
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,6 +34,8 @@ urlpatterns = [
     path('deconnexion/', logout_view, name='logout'),
     path('profil/', profile, name='profile'),
     path('profil/editer/', edit_profile, name='edit_profile'),
+    path('favoris/', favorite_list, name='favorite_list'),
+    path('favoris/toggle/<int:recipe_id>/', toggle_favorite, name='toggle_favorite'),
 ]
 
 if settings.DEBUG:

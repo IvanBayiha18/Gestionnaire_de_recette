@@ -1,5 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.core.paginator import Paginator
+
+from profiles.models import Favorite, UserProfile
 from .models import Recipe, Category
 from django.db.models import Q
 
@@ -97,3 +99,31 @@ def recipe_search(request):
         'search_performed': any([query, categorie_id, difficulte, temps_max]),
     }
     return render(request, 'recipes/recipe_search.html', context)
+
+def recipe_detail(request, recipe_id):
+    """Vue pour le détail d'une recette"""
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    
+    # Vérifie si la recette est en favori pour l'utilisateur connecté
+    recipe_is_favorite = False
+    if request.user.is_authenticated:
+        try:
+            user_profile = UserProfile.objects.get(user=request.user)
+            recipe_is_favorite = Favorite.objects.filter(
+                user_profile=user_profile, 
+                recipe=recipe
+            ).exists()
+        except UserProfile.DoesNotExist:
+            pass
+    
+    ingredients = recipe.ingredients_recette.all()
+    etapes = recipe.etapes.all().order_by('ordre')
+    
+    context = {
+        'recipe': recipe,
+        'ingredients': ingredients,
+        'etapes': etapes,
+        'recipe_is_favorite': recipe_is_favorite,  # Nouveau contexte
+    }
+    
+    return render(request, 'recipes/recipe_detail.html', context)

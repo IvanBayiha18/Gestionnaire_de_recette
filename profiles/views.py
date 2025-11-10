@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 from profiles.forms import UserForm, UserProfileForm
+from recipes.models import Recipe
 from .models import Favorite, UserProfile
 
 # Create your views here.
@@ -68,6 +69,40 @@ def profile(request):
         'favorites': favorites,
     }
     return render(request, 'profiles/profile.html', context)
+
+@login_required
+def toggle_favorite(request, recipe_id):
+    """Ajouter ou retirer une recette des favoris"""
+    recipe = get_object_or_404(Recipe, id=recipe_id)
+    user_profile = UserProfile.objects.get(user=request.user)
+    
+    # Vérifie si la recette est déjà en favori
+    favorite_exists = Favorite.objects.filter(
+        user_profile=user_profile, 
+        recipe=recipe
+    ).exists()
+    
+    if favorite_exists:
+        # Retirer des favoris
+        Favorite.objects.filter(user_profile=user_profile, recipe=recipe).delete()
+        messages.success(request, f'"{recipe.titre}" a été retiré de vos favoris.')
+    else:
+        # Ajouter aux favoris
+        Favorite.objects.create(user_profile=user_profile, recipe=recipe)
+        messages.success(request, f'"{recipe.titre}" a été ajouté à vos favoris.')
+    
+    return redirect('recipe_detail', recipe_id=recipe_id)
+
+@login_required
+def favorite_list(request):
+    """Afficher la liste des favoris"""
+    user_profile = UserProfile.objects.get(user=request.user)
+    favorites = Favorite.objects.filter(user_profile=user_profile).select_related('recipe')
+    
+    context = {
+        'favorites': favorites,
+    }
+    return render(request, 'profiles/favorite_list.html', context)
 
 @login_required
 def edit_profile(request):

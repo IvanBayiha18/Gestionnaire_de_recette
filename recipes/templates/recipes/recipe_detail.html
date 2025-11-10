@@ -45,6 +45,14 @@
         </div>
     </div>
 
+    <!-- AJOUT : Information auteur -->
+    <div class="mb-4">
+        <small class="text-muted">
+            Recette créée par <strong>{{ recipe.auteur.username }}</strong> 
+            le {{ recipe.date_creation|date:"d/m/Y" }}
+        </small>
+    </div>
+
     <div class="row">
         <!-- Ingrédients -->
         <div class="col-lg-4">

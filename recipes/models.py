@@ -1,5 +1,6 @@
 from django.db import models
 from ingredients.models import Ingredient
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Category(models.Model):
@@ -56,6 +57,15 @@ class Recipe(models.Model):
         choices=DIFFICULTE_CHOICES,
         default='moyen',
         verbose_name="Niveau de difficulté"
+    )
+
+    auteur = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='recettes',
+        verbose_name='Auteur',
+        null= True,
+        blank= True
     )
     
     date_creation = models.DateTimeField(auto_now_add=True)

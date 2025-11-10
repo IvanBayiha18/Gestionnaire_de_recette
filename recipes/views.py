@@ -151,12 +151,11 @@ def create_recipe(request):
         step_formset = RecipeStepFormSet(request.POST, prefix='steps')
         
         if recipe_form.is_valid() and ingredient_formset.is_valid() and step_formset.is_valid():
-            # Sauvegarder la recette
+            # CORRECTION : Bien assigner l'auteur
             recipe = recipe_form.save(commit=False)
-            recipe.auteur = request.user  # On ajoutera ce champ après
+            recipe.auteur = request.user  # C'est ici que l'auteur est défini
             recipe.save()
             
-            # Sauvegarder les formsets
             ingredient_formset.instance = recipe
             ingredient_formset.save()
             
@@ -184,7 +183,8 @@ def my_recipes(request):
     """Vue pour afficher les recettes de l'utilisateur"""
     # Pour l'instant, retourne toutes les recettes
     # On implémentera le filtre par utilisateur après avoir ajouté le champ auteur
-    recipes = Recipe.objects.all().order_by('-date_creation')
+    # On filtre par utilisateur
+    recipes = Recipe.objects.filter(auteur=request.user).order_by('-date_creation')
     
     context = {
         'recipes': recipes,
